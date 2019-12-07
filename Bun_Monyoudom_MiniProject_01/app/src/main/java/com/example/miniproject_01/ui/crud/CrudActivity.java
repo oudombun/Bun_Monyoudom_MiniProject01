@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -113,18 +114,24 @@ public class CrudActivity extends AppCompatActivity implements EasyPermissions.P
         progressBar.setVisibility(View.INVISIBLE);
         btnChoose.setOnClickListener(v -> openExternal());
         btnAdd.setOnClickListener(v -> addArticle());
+        ImageButton back = findViewById(R.id.btnBack);
+        back.setOnClickListener(v->{finish();});
     }
 
 
     private void functionView() {
         vid = getIntent().getIntExtra("VIEW_ID",-1);
         presenter.findArticles(vid,true);
+        ImageButton back = findViewById(R.id.btnBack);
+        back.setOnClickListener(v->{finish();});
     }
 
     private void functionUpdate() {
         progressBar.setVisibility(View.INVISIBLE);
         btnChoose.setOnClickListener(v -> openExternal());
         btnUpdate.setOnClickListener(v -> updateArticle());
+        ImageButton back = findViewById(R.id.btnBack);
+        back.setOnClickListener(v->{finish();});
     }
 
     Article articleupdated;
@@ -234,7 +241,7 @@ public class CrudActivity extends AppCompatActivity implements EasyPermissions.P
             vTitle.setText(article.getData().getTitle());
             vDes.setText(article.getData().getDescription());
             if(article.getData().getImage()==null||article.getData().getImage().isEmpty()||article.getData().getImage().equals("")){
-                Picasso.get().load(R.drawable.default_img).centerCrop().fit().into(imageView);
+                Picasso.get().load(R.drawable.placeholder1).centerCrop().fit().into(imageView);
             }else{
                 Picasso.get().load(article.getData().getImage()).centerCrop().fit().into(imageView);
             }
@@ -247,7 +254,11 @@ public class CrudActivity extends AppCompatActivity implements EasyPermissions.P
             imageUrl = update_article.getImage();
             mTitle.setText(update_article.getTitle());
             mDes.setText(update_article.getDescription());
-            Picasso.get().load(update_article.getImage()).centerCrop().fit().into(imageView);
+            if(article.getData().getImage()==null||article.getData().getImage().isEmpty()||article.getData().getImage().equals("")){
+                Picasso.get().load(R.drawable.placeholder1).centerCrop().fit().into(imageView);
+            }else{
+                Picasso.get().load(update_article.getImage()).centerCrop().fit().into(imageView);
+            }
         }
     }
 

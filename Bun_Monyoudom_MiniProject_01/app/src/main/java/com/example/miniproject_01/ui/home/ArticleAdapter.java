@@ -20,18 +20,22 @@ import com.example.miniproject_01.entity.Article;
 import com.example.miniproject_01.ui.crud.CrudActivity;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHolder> {
 
     private Context context;
     private List<Article> arrayList;
+    private List<Article> copyListFull;
     private OnRecyclerClickListner listener;
 
     public ArticleAdapter(Context context, List<Article> arrayList, OnRecyclerClickListner listener) {
         this.context = context;
         this.arrayList = arrayList;
         this.listener = listener;
+        copyListFull = new ArrayList<>(arrayList);
+
     }
 
     @NonNull
@@ -50,8 +54,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
         holder.des.setText(article.getDescription());
         holder.date.setText(article.getCreatedDate());
         Log.i(TAG, "onBindViewHolder: "+article.getImage());
-        if(article.getImage() ==null||article.getImage().equals("string") ||article.getImage().isEmpty()){
-            holder.imageView.setImageResource(R.drawable.default_img);
+        if(article.getImage() ==null||article.getImage().equals("string") ||article.getImage().isEmpty()||article.getImage().equals("")){
+            holder.imageView.setImageResource(R.drawable.placeholder1);
+
         }else{
             Picasso.get().load(article.getImage()).fit().centerCrop().into(holder.imageView);
         }
@@ -65,6 +70,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
         return arrayList.size();
     }
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
         TextView title, des,date;
         ImageView imageView;
@@ -75,6 +81,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
             des = itemView.findViewById(R.id.txt_des);
             date= itemView.findViewById(R.id.txt_date);
             imageView = itemView.findViewById(R.id.img);
+
             imageButton = itemView.findViewById(R.id.btnMore);
             imageButton.setOnClickListener(v->{
                 PopupMenu popup = new PopupMenu(context,v);
@@ -83,17 +90,10 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
 
                 popup.setOnMenuItemClickListener(item -> {
                     switch (item.getItemId()) {
-                        case R.id.pop_add:
-                            Intent intent_add = new Intent(context, CrudActivity.class);
-                            int id_add = R.layout.activity_crud_add;
-                            intent_add.putExtra("MODE",id_add);
-                            context.startActivity(intent_add);
-                            return true;
                         case R.id.pop_edit:
                             Intent intent_edit = new Intent(context, CrudActivity.class);
                             int id_update = R.layout.activity_crud_update;
                             int id = arrayList.get(getAdapterPosition()).getId();
-
                             intent_edit.putExtra("MODE",id_update);
                             intent_edit.putExtra("UPDATE_ID",id);
                             context.startActivity(intent_edit);

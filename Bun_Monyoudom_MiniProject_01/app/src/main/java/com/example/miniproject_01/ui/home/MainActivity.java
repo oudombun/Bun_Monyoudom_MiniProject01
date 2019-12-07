@@ -1,5 +1,6 @@
 package com.example.miniproject_01.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -7,7 +8,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -16,8 +16,11 @@ import com.example.miniproject_01.R;
 import com.example.miniproject_01.entity.Article;
 import com.example.miniproject_01.entity.Pagination;
 import com.example.miniproject_01.entity.response.ArticleOneResponse;
+import com.example.miniproject_01.ui.crud.CrudActivity;
 import com.example.miniproject_01.ui.home.mvp.HomeMvp;
 import com.example.miniproject_01.ui.home.mvp.HomePresenter;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.paginate.Paginate;
 
 import java.util.ArrayList;
@@ -34,11 +37,14 @@ public class MainActivity extends AppCompatActivity implements HomeMvp.View {
     private ImageView imageViews;
     SwipeRefreshLayout swipeRefreshLayout;
 
+    FloatingActionButton floatingActionButton;
+    BottomAppBar bottomAppBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.homepage);
 
         presenter = new HomePresenter();
         presenter.setView(this);
@@ -52,6 +58,13 @@ public class MainActivity extends AppCompatActivity implements HomeMvp.View {
         getData();
 
         swipeRefreshLayout.setOnRefreshListener(this::refresh);
+
+        floatingActionButton.setOnClickListener(v->{
+            Intent intent_add = new Intent(MainActivity.this, CrudActivity.class);
+            int id_add = R.layout.activity_crud_add;
+            intent_add.putExtra("MODE",id_add);
+            startActivity(intent_add);
+        });
     }
     private void refresh() {
         currentPage=1;
@@ -78,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements HomeMvp.View {
             if(isLoading){
                 presenter.getArticles(currentPage,15, false);
                 isLoading=false;
-                Toast.makeText(MainActivity.this, currentPage+"cur", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, currentPage+"cur", Toast.LENGTH_SHORT).show();
                 currentPage++;
             }
         }
@@ -98,6 +111,12 @@ public class MainActivity extends AppCompatActivity implements HomeMvp.View {
     private void setupUI() {
         mRecyclerView = findViewById(R.id.recyclerView);
         swipeRefreshLayout = findViewById(R.id.swipe);
+
+        floatingActionButton = findViewById(R.id.fab);
+        bottomAppBar = findViewById(R.id.bottomAppBar);
+        //main line for setting menu in bottom app bar
+        setSupportActionBar(bottomAppBar);
+
     }
 
     private void setupRecyclerview() {
@@ -109,8 +128,6 @@ public class MainActivity extends AppCompatActivity implements HomeMvp.View {
         mAdapter.notifyDataSetChanged();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRecyclerView.setItemAnimator( new DefaultItemAnimator());
-        mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -144,4 +161,5 @@ public class MainActivity extends AppCompatActivity implements HomeMvp.View {
         Toast.makeText(this, "delete success", Toast.LENGTH_SHORT).show();
         refresh();
     }
+
 }
